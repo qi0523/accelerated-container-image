@@ -634,7 +634,7 @@ func (o *snapshotter) constructImageBlobURL(ref string) (string, error) {
 	if host == "docker.io" {
 		host = "registry-1.docker.io"
 	}
-	return "https://" + path.Join(host, "v2", repo) + "/blobs", nil
+	return "http://" + path.Join(host, "v2", repo) + "/blobs", nil
 }
 
 // atomicWriteOverlaybdTargetConfig
