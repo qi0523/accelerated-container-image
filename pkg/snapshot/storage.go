@@ -529,6 +529,12 @@ func (o *snapshotter) constructOverlayBDSpec(ctx context.Context, key string, wr
 			return errors.Wrapf(err, "failed to construct image blob prefix url for snapshot %s", key)
 		}
 
+		policy := info.Labels["p2p-policy"]
+
+		log.G(ctx).Infof("p2p-policy %s", policy)
+
+		blobPrefixURL = path.Join(blobPrefixURL, policy)
+
 		configJSON.RepoBlobURL = blobPrefixURL
 		if dataDgst, isFastOCI := info.Labels[label.FastOCIDigest]; isFastOCI {
 			lower := OverlayBDBSConfigLower{
