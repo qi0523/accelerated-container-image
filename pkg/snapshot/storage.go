@@ -493,6 +493,7 @@ func (o *snapshotter) myAttachAndMountBlockDevice(ctx context.Context, snID stri
 	}()
 
 	if policy, ok := info.Labels["p2p-policy"]; ok {
+		logrus.Info("p2p-policy", policy)
 		if err = os.WriteFile(path.Join(targetPath, "control"), ([]byte)(fmt.Sprintf("dev_config=overlaybd/%s/%s", policy, o.overlaybdConfPath(snID))), 0666); err != nil {
 			return errors.Wrapf(err, "failed to write target dev_config for %s", targetPath)
 		}
