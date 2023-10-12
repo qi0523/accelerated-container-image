@@ -512,7 +512,7 @@ func (o *snapshotter) createMountPoint(ctx context.Context, kind snapshots.Kind,
 			}
 			log.G(ctx).Debugf("attachAndMountBlockDevice (obdID: %s, writeType: %s, fsType %s, targetPath: %s)",
 				obdID, writeType, fsType, o.overlaybdTargetPath(obdID))
-			if err = o.attachAndMountBlockDevice(ctx, obdID, writeType, fsType, parent == ""); err != nil {
+			if err = o.myAttachAndMountBlockDevice(ctx, obdID, writeType, fsType, parent == "", info); err != nil {
 				log.G(ctx).Errorf("%v", err)
 				return nil, errors.Wrapf(err, "failed to attach and mount for snapshot %v", obdID)
 			}
@@ -566,6 +566,13 @@ func (o *snapshotter) Prepare(ctx context.Context, key, parent string, opts ...s
 
 // View returns a readonly view on parent snapshotter.
 func (o *snapshotter) View(ctx context.Context, key, parent string, opts ...snapshots.Opt) (_ []mount.Mount, retErr error) {
+	pos := strings.Index(key, "?")
+	if pos != -1 {
+		opts = append(opts, snapshots.WithLabels(map[string]string{
+			"p2p-policy": key[pos+1:],
+		}))
+		key = key[:pos]
+	}
 	log.G(ctx).Debugf("View (key: %s, parent: %s)", key, parent)
 	defer log.G(ctx).Debugf("return View (key: %s, parent: %s)", key, parent)
 	start := time.Now()
